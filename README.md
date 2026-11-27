@@ -4,17 +4,35 @@
 
 ## Fonctionnalités
 
-- **Titres colorés** T1 / T2 / T3 → violet, bleu, vert (code couleur du bloc-notes Notion)
-- **Mise en forme** : gras, italique, souligné, barré
-- **9 couleurs de texte et 9 surlignages**, identiques à la palette Notion
-- **Tableaux** avec ajout/suppression de lignes et colonnes, ligne d'en-tête activable
-- **Équations** (LaTeX) dans la ligne ou centrées, avec boutons ∀ ∃ ∈ ℝ ⇒ ⇔ ∧ ∨, fractions, puissances… et aperçu en direct (KaTeX)
-- **Palette de symboles** à insérer dans le texte
-- **Encadrés** : Correction ✅, À retenir 📌, Attention ⚠️, Définition 📘, Remarque 📝
-- **Rangement** : à la suite dans la page de la matière, dans une nouvelle sous-page, ou dans une nouvelle matière
-- **Brouillon** enregistré automatiquement dans le navigateur
-- **Voir le code** : affiche le Markdown envoyé à Notion (copiable)
-- **Installable comme application** depuis l'app Claude pour ordinateur (fenêtre et icône dédiées)
+**Texte**
+- Titres T1 / T2 / T3 / T4 → violet, bleu, vert, orange (code couleur du bloc-notes Notion)
+- Gras, italique, souligné, barré, `code dans la ligne` (Ctrl+E), liens (Ctrl+K), effacer la mise en forme
+- 9 couleurs de texte, 9 surlignages et 9 fonds de paragraphe, identiques à la palette Notion
+- Citations
+
+**Listes**
+- Puces, numérotées, cases à cocher (cliquer sur la case pour cocher)
+- Indentation avec Tab / Maj+Tab
+
+**Mise en page**
+- Tableaux (ajout/suppression de lignes et colonnes, ligne d'en-tête)
+- 2 ou 3 colonnes
+- Sections dépliantes
+- Blocs de code avec langage (bash, PowerShell, SQL, Python, HTML…)
+- Sommaire automatique, séparateurs
+
+**Maths**
+- Équations LaTeX dans la ligne ou centrées, avec boutons ∀ ∃ ∈ ℝ ⇒ ⇔ ∧ ∨, fractions, puissances… et aperçu en direct (KaTeX)
+- Palette de symboles à insérer dans le texte
+
+**Encadrés**
+- Correction ✅, À retenir 📌, Attention ⚠️, Définition 📘, Exemple 💡, Méthode 🛠️, Exercice ✏️, Astuce ✨, Remarque 📝
+
+**Le reste**
+- Rangement : à la suite dans la page de la matière, dans une nouvelle sous-page, ou dans une nouvelle matière
+- Brouillon enregistré automatiquement dans le navigateur
+- Voir le code : affiche le Markdown envoyé à Notion (copiable)
+- Installable comme application depuis l'app Claude pour ordinateur
 
 ## Comment ça marche
 
