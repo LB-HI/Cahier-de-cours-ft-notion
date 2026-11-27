@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cahier de cours</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* VOICE: calme, outil de travail d'étudiant — rien ne doit distraire de la prise de notes
+   IDEA: un cahier Seyès français, la page sur laquelle on écrit en cours
+   PICTURE: la feuille elle-même, grande, avec sa marge rouge, au centre de l'écran
+   COLOUR and TYPE: papier blanc, lignes bleu-violet très pâles, marge rouge #e4002b, encre noire ; Archivo pour l'interface, Inter pour le texte
+   LAYOUT: barre de cible en haut, barre d'outils collante, feuille pleine largeur, bouton Compiler toujours visible */
+:root{color-scheme:light dark;--bg:light-dark(#eef0f3,#121418);--ink:light-dark(#16181c,#e9ebef);--muted:light-dark(#5d6470,#9aa1ad);--paper:light-dark(#fff,#1b1e24);--line:light-dark(#dfe3f4,#262b36);--line2:light-dark(#c4cbec,#303747);--red:#e4002b;--panel:light-dark(#fff,#1b1e24);--bd:light-dark(#d5d9e0,#2e333d);--hov:light-dark(#f0f2f6,#252932)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif;overflow-x:clip}
+button,select,input,textarea{font:inherit;color:inherit}
+header{padding:20px max(4vw,14px) 12px;display:flex;flex-wrap:wrap;gap:12px 20px;align-items:end}
+h1.app{font:800 clamp(26px,4vw,36px)/1.05 Archivo,sans-serif;font-stretch:112%;margin:0 auto 0 0;letter-spacing:-.01em}
+h1.app span{color:var(--red)}
+.field{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--muted)}
+.field select,.field input{min-height:44px;padding:8px 10px;border:1px solid var(--bd);border-radius:8px;background:var(--panel);font-size:16px;color:var(--ink)}
+.field input{width:min(340px,80vw)}
+.seg{display:flex;border:1px solid var(--bd);border-radius:8px;overflow:hidden;background:var(--panel)}
+.seg button{border:0;background:none;padding:0 12px;min-height:42px;cursor:pointer;font-size:14px}
+.seg button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.tb{position:sticky;top:0;z-index:5;background:var(--bg);padding:8px max(4vw,14px);display:flex;flex-wrap:wrap;gap:6px;border-bottom:1px solid var(--bd)}
+.grp{display:flex;gap:2px;background:var(--panel);border:1px solid var(--bd);border-radius:8px;padding:2px;position:relative}
+.tb button{border:0;background:none;min-width:38px;min-height:38px;border-radius:6px;cursor:pointer;font-size:15px;padding:0 8px}
+.tb button:hover,.tb button:focus-visible{background:var(--hov);outline:none}
+.tb .h1{color:#9065B0;font-weight:800}.tb .h2{color:#337EA9;font-weight:800}.tb .h3{color:#448361;font-weight:800}
+.pop{position:absolute;top:calc(100% + 6px);left:0;background:var(--panel);border:1px solid var(--bd);border-radius:10px;padding:10px;box-shadow:0 10px 30px #0003;z-index:20;display:none;width:max-content;max-width:min(92vw,360px)}
+.pop.open{display:block}
+.pop h4{margin:4px 2px 6px;font:600 12px Inter;color:var(--muted)}
+.sw{display:grid;grid-template-columns:repeat(5,34px);gap:6px}
+.sw button{width:34px;height:34px;min-width:0;border-radius:50%;border:1px solid var(--bd)}
+.sym{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px}
+.sym button{min-width:0;font-size:17px;border:1px solid var(--bd)!important}
+.callmenu button{display:flex;gap:8px;align-items:center;width:100%;text-align:left;min-height:40px}
+.tablebar{display:none}.tablebar.on{display:flex}
+.tablebar button{font-size:13px}
+main{padding:18px max(4vw,14px) 120px}
+.paper{max-width:900px;margin:0 auto;background:var(--paper);border-radius:4px;box-shadow:0 1px 3px #0002,0 12px 40px #0001;position:relative;
+background-image:linear-gradient(90deg,transparent 64px,var(--red) 64px,var(--red) 65.5px,transparent 65.5px),linear-gradient(var(--line2) 1px,transparent 1px),linear-gradient(var(--line) 1px,transparent 1px);
+background-size:100% 100%,100% 32px,100% 8px;background-position:0 0,0 23px,0 23px}
+#ed{min-height:70vh;padding:28px 28px 60px 86px;outline:none;font-size:16.5px;line-height:1.75;caret-color:var(--red)}
+#ed:empty::before{content:"Commence à écrire ton cours ici…";color:var(--muted)}
+#ed h1,#ed h2,#ed h3{font-family:Archivo,sans-serif;line-height:1.2;margin:1.1em 0 .4em}
+#ed h1{font-size:30px;color:#9065B0}#ed h2{font-size:23px;color:#337EA9}#ed h3{font-size:19px;color:#448361}
+#ed p{margin:.3em 0}#ed ul,#ed ol{margin:.3em 0;padding-left:1.6em}
+#ed table{border-collapse:collapse;margin:12px 0;width:100%;background:var(--paper)}
+#ed td,#ed th{border:1px solid var(--bd);padding:6px 10px;vertical-align:top;min-width:60px}
+#ed table[data-head="1"] tr:first-child td{background:var(--hov);font-weight:600}
+#ed hr{border:0;border-top:2px solid var(--bd);margin:18px 0}
+.callout{border-radius:8px;padding:10px 14px 10px 44px;margin:10px 0;position:relative}
+.callout::before{position:absolute;left:14px;top:10px;content:attr(data-i)}
+.callout[data-k=corr]{background:#EDF3EC;color:#1d3b26}.callout[data-k=ret]{background:#FBF3DB;color:#4a3a0e}.callout[data-k=warn]{background:#FDEBEC;color:#5d1a17}.callout[data-k=def]{background:#E7F3F8;color:#12384d}.callout[data-k=rq]{background:#F1F1EF;color:#37352f}
+.eq{display:inline-block;padding:0 4px;border-radius:4px;background:light-dark(#f3f0fa,#2a2536);cursor:pointer;user-select:all}
+.eqblock{display:block;text-align:center;padding:10px;margin:10px 0;font-size:1.15em}
+.eq:hover{outline:1px solid #9065B0}
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--panel);border-top:1px solid var(--bd);padding:10px max(4vw,14px);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+#status{flex:1 1 240px;font-size:14px;color:var(--muted)}
+#status a{color:#337EA9;font-weight:600}
+#status.err{color:var(--red)}#status.ok{color:#448361}
+.btn{min-height:44px;border-radius:8px;border:1px solid var(--bd);background:var(--panel);padding:0 16px;cursor:pointer;font-weight:600}
+.btn.main{background:var(--red);border-color:var(--red);color:#fff;padding:0 22px}
+.btn:disabled{opacity:.55;cursor:wait}
+.btn:focus-visible,.seg button:focus-visible,.field select:focus-visible,.field input:focus-visible{outline:3px solid #337EA9;outline-offset:2px}
+dialog{border:1px solid var(--bd);border-radius:12px;background:var(--panel);color:var(--ink);padding:18px;width:min(560px,94vw)}
+dialog::backdrop{background:#0006}
+dialog h3{margin:0 0 10px;font:700 20px Archivo}
+dialog textarea{width:100%;min-height:80px;font:16px ui-monospace,Menlo,monospace;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.prev{min-height:56px;display:flex;align-items:center;justify-content:center;font-size:1.3em;margin:10px 0;padding:8px;border-radius:8px;background:var(--bg);overflow-x:auto}
+.row{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap;margin-top:12px}
+.ltx{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:4px;max-height:150px;overflow:auto}
+.ltx button{min-height:38px;border:1px solid var(--bd);background:var(--panel);border-radius:6px;cursor:pointer}
+#mdout{width:100%;min-height:260px;font:13px ui-monospace,Menlo,monospace;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg)}
+.chk{display:flex;gap:8px;align-items:center;font-size:14px;margin-top:8px}
+@media(max-width:600px){#ed{padding:20px 14px 60px 46px}.paper{background-image:linear-gradient(90deg,transparent 32px,var(--red) 32px,var(--red) 33.5px,transparent 33.5px),linear-gradient(var(--line2) 1px,transparent 1px),linear-gradient(var(--line) 1px,transparent 1px)}.field input{width:100%}.field{flex:1 1 100%}}
+@media(prefers-reduced-motion:no-preference){.btn.main{transition:transform .15s}.btn.main:active{transform:scale(.97)}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+</head>
+<body>
+<header>
+  <h1 class="app">Cahier <span>de cours</span></h1>
+  <label class="field">Matière
+    <select id="target"></select>
+  </label>
+  <label class="field" id="newWrap" hidden>Nom de la nouvelle matière
+    <input id="newName" placeholder="ex. Cybersécurité">
+  </label>
+  <div class="field">Où ranger le cours
+    <div class="seg" role="group" aria-label="Où ranger le cours">
+      <button type="button" data-mode="append" aria-pressed="true">À la suite dans la page</button>
+      <button type="button" data-mode="sub" aria-pressed="false">Nouvelle sous-page</button>
+    </div>
+  </div>
+  <label class="field">Titre du cours
+    <input id="title" placeholder="ex. Chapitre 2 — Les ensembles">
+  </label>
+</header>
+
+<div class="tb" id="tb">
+  <div class="grp">
+    <button class="h1" data-cmd="h1" title="Titre 1 (violet)">T1</button>
+    <button class="h2" data-cmd="h2" title="Titre 2 (bleu)">T2</button>
+    <button class="h3" data-cmd="h3" title="Titre 3 (vert)">T3</button>
+    <button data-cmd="p" title="Texte normal">¶</button>
+  </div>
+  <div class="grp">
+    <button data-cmd="bold" title="Gras (Ctrl+B)"><b>G</b></button>
+    <button data-cmd="italic" title="Italique (Ctrl+I)"><i>I</i></button>
+    <button data-cmd="underline" title="Souligné (Ctrl+U)"><u>S</u></button>
+    <button data-cmd="strikeThrough" title="Barré"><s>B</s></button>
+  </div>
+  <div class="grp">
+    <button data-pop="pColor" title="Couleur du texte"><span style="border-bottom:3px solid #D44C47">A</span></button>
+    <div class="pop" id="pColor"><h4>Couleur du texte</h4><div class="sw" id="swFg"></div><h4>Surlignage</h4><div class="sw" id="swBg"></div></div>
+  </div>
+  <div class="grp">
+    <button data-cmd="insertUnorderedList" title="Liste à puces">•≡</button>
+    <button data-cmd="insertOrderedList" title="Liste numérotée">1≡</button>
+    <button data-cmd="table" title="Insérer un tableau">▦</button>
+    <button data-cmd="hr" title="Séparateur">—</button>
+  </div>
+  <div class="grp">
+    <button data-cmd="eq" title="Équation dans la ligne">∑x</button>
+    <button data-cmd="eqb" title="Équation centrée">∑ ▭</button>
+    <button data-pop="pSym" title="Symboles">Ω</button>
+    <div class="pop" id="pSym"><h4>Insérer un symbole</h4><div class="sym" id="sym"></div></div>
+  </div>
+  <div class="grp">
+    <button data-pop="pCall" title="Encadré">▣ Encadré</button>
+    <div class="pop callmenu" id="pCall"></div>
+  </div>
+  <div class="grp">
+    <button data-cmd="undo" title="Annuler (Ctrl+Z)">↶</button>
+    <button data-cmd="redo" title="Rétablir">↷</button>
+  </div>
+  <div class="grp tablebar" id="tablebar">
+    <button data-t="row">+ ligne</button><button data-t="col">+ colonne</button>
+    <button data-t="delrow">− ligne</button><button data-t="delcol">− colonne</button>
+    <button data-t="head">En-tête</button><button data-t="del">Suppr. tableau</button>
+  </div>
+</div>
+
+<main><div class="paper"><div id="ed" contenteditable="true" spellcheck="true"></div></div></main>
+
+<div class="dock">
+  <div id="status" role="status">Brouillon enregistré sur cet appareil.</div>
+  <button class="btn" id="showMd">Voir le code</button>
+  <button class="btn" id="clear">Nouveau cours</button>
+  <button class="btn main" id="compile">Compiler vers Notion</button>
+</div>
+
+<dialog id="dEq">
+  <h3 id="dEqT">Équation</h3>
+  <textarea id="tex" placeholder="ex. \forall x \in \mathbb{R}, x^2 \geq 0"></textarea>
+  <div class="ltx" id="ltx"></div>
+  <div class="prev" id="prev"></div>
+  <div class="row"><button class="btn" id="eqDel" hidden>Supprimer</button><button class="btn" id="eqCancel">Annuler</button><button class="btn main" id="eqOk">Insérer</button></div>
+</dialog>
+
+<dialog id="dMd">
+  <h3>Code envoyé à Notion</h3>
+  <textarea id="mdout" readonly></textarea>
+  <div class="row"><button class="btn" id="mdCopy">Copier</button><button class="btn main" id="mdClose">Fermer</button></div>
+</dialog>
+
+<dialog id="dClear">
+  <h3>Commencer un nouveau cours ?</h3>
+  <p>Le brouillon actuel sera effacé de cet appareil. Ce qui a déjà été compilé reste dans Notion.</p>
+  <div class="row"><button class="btn" id="clNo">Garder</button><button class="btn main" id="clYes">Effacer</button></div>
+</dialog>
+
+<script>
+{
+const ROOT='4251a69e-e546-8118-b4bc-dc09dc14c9a7';
+const DEFAULTS=[
+ {id:'4251a69e-e546-8157-9fd8-da2930037f84',name:'Conception et Développement'},
+ {id:'4251a69e-e546-81eb-b89a-dc09848c54d6',name:'Administration Réseau'},
+ {id:'4251a69e-e546-8180-8451-f140db782462',name:'Mathématiques'},
+ {id:'4251a69e-e546-8143-810e-ca63f0f530da',name:'Logique',parent:'4251a69e-e546-8180-8451-f140db782462'},
+ {id:'4251a69e-e546-810d-9fe8-c5b84f38321c',name:'Anglais'},
+ {id:'4251a69e-e546-81ab-8165-ef9e37eaf864',name:'Droit (CEJM)'},
+ {id:'4251a69e-e546-816c-830d-f97c1bbdb407',name:'Économie-Management (CEJM)'}];
+const FGC={gray:'#787774',brown:'#9F6B53',orange:'#D9730D',yellow:'#CB912F',green:'#448361',blue:'#337EA9',purple:'#9065B0',pink:'#C14C8A',red:'#D44C47'};
+const BGC={gray:'#F1F1EF',brown:'#F4EEEE',orange:'#FBECDD',yellow:'#FBF3DB',green:'#EDF3EC',blue:'#E7F3F8',purple:'#F6F3F9',pink:'#FAF1F5',red:'#FDEBEC'};
+const CALL={corr:['✅','green_bg','Correction'],ret:['📌','yellow_bg','À retenir'],warn:['⚠️','red_bg','Attention'],def:['📘','blue_bg','Définition'],rq:['📝','gray_bg','Remarque']};
+const SYMS='∀ ∃ ∈ ∉ ℝ ℕ ℤ ℚ ⇒ ⇔ ∧ ∨ ¬ ≠ ≤ ≥ ≈ → ← ↔ × ÷ ± √ ∞ π Σ ∪ ∩ ⊂ ° €'.split(' ');
+const LTX=[['∀','\\forall '],['∃','\\exists '],['∈','\\in '],['∉','\\notin '],['ℝ','\\mathbb{R}'],['ℕ','\\mathbb{N}'],['ℤ','\\mathbb{Z}'],['⇒','\\Rightarrow '],['⇔','\\Leftrightarrow '],['∧','\\land '],['∨','\\lor '],['¬','\\neg '],['P̄','\\overline{P}'],['≠','\\neq '],['≤','\\leq '],['≥','\\geq '],['x²','^{2}'],['xₙ','_{n}'],['a/b','\\frac{a}{b}'],['√','\\sqrt{x}'],['Σ','\\sum_{i=1}^{n}'],['π','\\pi '],['∞','\\infty '],['×','\\times '],['±','\\pm '],['→','\\to '],['∪','\\cup '],['∩','\\cap '],['⊂','\\subset ']];
+const $=s=>document.querySelector(s), ed=$('#ed');
+let mode='append', savedRange=null, eqTarget=null, eqBlock=false, mcpP=window.claude?claude.use('mcp'):Promise.resolve(null);
+let targets=DEFAULTS.slice();
+const ls={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const escH=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+try{document.execCommand('defaultParagraphSeparator',false,'p')}catch(e){}
+
+/* ---------- cibles ---------- */
+function renderTargets(sel){
+  const s=$('#target');
+  s.innerHTML=targets.map(t=>`<option value="${escH(t.id)}">${t.parent?'— ':''}${escH(t.name)}</option>`).join('')+'<option value="new">+ Nouvelle matière…</option>';
+  if(sel)s.value=sel;
+  $('#newWrap').hidden=s.value!=='new';
+}
+$('#target').addEventListener('change',()=>{$('#newWrap').hidden=$('#target').value!=='new';save()});
+document.querySelectorAll('.seg button').forEach(b=>b.addEventListener('click',()=>{mode=b.dataset.mode;document.querySelectorAll('.seg button').forEach(x=>x.setAttribute('aria-pressed',x===b));save()}));
+
+/* ---------- couleurs : correspondance navigateur -> Notion ---------- */
+const norm=c=>{const d=document.createElement('i');d.style.color=c;document.body.appendChild(d);const v=getComputedStyle(d).color.replace(/\s/g,'');d.remove();return v};
+const FG={},BG={};
+for(const k in FGC)FG[norm(FGC[k])]=k;for(const k in BGC)BG[norm(BGC[k])]=k;
+$('#swFg').innerHTML=Object.entries(FGC).map(([k,v])=>`<button data-fg="${k}" title="${k}" style="background:${v}"></button>`).join('')+'<button data-fg="none" title="Sans couleur" style="background:linear-gradient(135deg,#fff 45%,#D44C47 45% 55%,#fff 55%)"></button>';
+$('#swBg').innerHTML=Object.entries(BGC).map(([k,v])=>`<button data-bg="${k}" title="${k}" style="background:${v}"></button>`).join('')+'<button data-bg="none" title="Sans surlignage" style="background:linear-gradient(135deg,#fff 45%,#D44C47 45% 55%,#fff 55%)"></button>';
+$('#sym').innerHTML=SYMS.map(s=>`<button data-sym="${s}">${s}</button>`).join('');
+$('#pCall').innerHTML=Object.entries(CALL).map(([k,v])=>`<button data-call="${k}"><span>${v[0]}</span>${v[2]}</button>`).join('');
+$('#ltx').innerHTML=LTX.map(([a,b],i)=>`<button data-l="${i}" title="${escH(b)}">${a}</button>`).join('');
+
+/* ---------- barre d'outils ---------- */
+const tb=$('#tb');
+tb.addEventListener('mousedown',e=>{if(e.target.closest('button'))e.preventDefault()});
+function keepRange(){const s=getSelection();if(s.rangeCount&&ed.contains(s.anchorNode))savedRange=s.getRangeAt(0).cloneRange()}
+function restore(){ed.focus();if(savedRange){const s=getSelection();s.removeAllRanges();s.addRange(savedRange)}}
+document.addEventListener('selectionchange',()=>{keepRange();const s=getSelection();const n=s.anchorNode&&(s.anchorNode.nodeType===1?s.anchorNode:s.anchorNode.parentElement);$('#tablebar').classList.toggle('on',!!(n&&ed.contains(n)&&n.closest('td')))});
+function closePops(){document.querySelectorAll('.pop.open').forEach(p=>p.classList.remove('open'))}
+document.addEventListener('click',e=>{if(!e.target.closest('.grp'))closePops()});
+tb.addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;
+  if(b.dataset.pop){const p=$('#'+b.dataset.pop),o=p.classList.contains('open');closePops();if(!o)p.classList.add('open');return}
+  restore();
+  const c=b.dataset.cmd;
+  if(c==='h1'||c==='h2'||c==='h3'||c==='p')document.execCommand('formatBlock',false,c==='p'?'P':c.toUpperCase());
+  else if(c==='table')document.execCommand('insertHTML',false,'<table data-head="1"><tbody>'+'<tr><td><br></td><td><br></td><td><br></td></tr>'.repeat(3)+'</tbody></table><p><br></p>');
+  else if(c==='hr')document.execCommand('insertHTML',false,'<hr><p><br></p>');
+  else if(c==='eq'||c==='eqb')openEq(null,c==='eqb');
+  else if(c)document.execCommand(c,false,null);
+  if(b.dataset.fg){document.execCommand('styleWithCSS',false,true);document.execCommand('foreColor',false,b.dataset.fg==='none'?getComputedStyle(ed).color:FGC[b.dataset.fg]);closePops()}
+  if(b.dataset.bg){document.execCommand('styleWithCSS',false,true);document.execCommand('hiliteColor',false,b.dataset.bg==='none'?'transparent':BGC[b.dataset.bg]);closePops()}
+  if(b.dataset.sym){document.execCommand('insertText',false,b.dataset.sym)}
+  if(b.dataset.call){const [i]=CALL[b.dataset.call];document.execCommand('insertHTML',false,`<div class="callout" data-k="${b.dataset.call}" data-i="${i}"><p>${CALL[b.dataset.call][2]} : </p></div><p><br></p>`);closePops()}
+  if(b.dataset.t)tableOp(b.dataset.t);
+  save();
+});
+function tableOp(op){
+  const s=getSelection(),n=s.anchorNode&&(s.anchorNode.nodeType===1?s.anchorNode:s.anchorNode.parentElement);
+  const td=n&&n.closest('td');if(!td)return;const tr=td.parentElement,tbl=td.closest('table'),ci=td.cellIndex;
+  if(op==='row'){const r=tr.cloneNode(true);r.querySelectorAll('td').forEach(c=>c.innerHTML='<br>');tr.after(r)}
+  if(op==='col')for(const r of tbl.rows){const c=document.createElement('td');c.innerHTML='<br>';r.cells[ci].after(c)}
+  if(op==='delrow'){if(tbl.rows.length>1)tr.remove()}
+  if(op==='delcol'){if(tr.cells.length>1)for(const r of [...tbl.rows])r.cells[ci]&&r.cells[ci].remove()}
+  if(op==='head')tbl.dataset.head=tbl.dataset.head==='1'?'0':'1';
+  if(op==='del')tbl.remove();
+}
+
+/* ---------- équations ---------- */
+function render(tex,el,block){
+  if(window.katex){try{el.innerHTML=katex.renderToString(tex||'\\;',{output:'mathml',throwOnError:false,displayMode:!!block});return}catch(e){}}
+  el.textContent=tex;
+}
+function openEq(chip,block){
+  eqTarget=chip;eqBlock=chip?chip.classList.contains('eqblock'):block;
+  $('#tex').value=chip?chip.dataset.tex:'';
+  $('#dEqT').textContent=eqBlock?'Équation centrée':'Équation dans la ligne';
+  $('#eqOk').textContent=chip?'Modifier':'Insérer';$('#eqDel').hidden=!chip;
+  render($('#tex').value,$('#prev'),eqBlock);$('#dEq').showModal();$('#tex').focus();
+}
+$('#tex').addEventListener('input',()=>render($('#tex').value,$('#prev'),eqBlock));
+$('#ltx').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const t=$('#tex'),v=LTX[b.dataset.l][1],p=t.selectionStart;t.setRangeText(v,p,t.selectionEnd,'end');t.focus();render(t.value,$('#prev'),eqBlock)});
+$('#eqCancel').addEventListener('click',()=>$('#dEq').close());
+$('#eqDel').addEventListener('click',()=>{if(eqTarget)eqTarget.remove();$('#dEq').close();save()});
+$('#eqOk').addEventListener('click',()=>{
+  const tex=$('#tex').value.trim();$('#dEq').close();if(!tex)return;
+  if(eqTarget){eqTarget.dataset.tex=tex;render(tex,eqTarget,eqBlock);save();return}
+  restore();
+  const tag=eqBlock?'div':'span';
+  document.execCommand('insertHTML',false,`<${tag} class="eq${eqBlock?' eqblock':''}" contenteditable="false" data-tex="${escH(tex)}"></${tag}>${eqBlock?'<p><br></p>':'&nbsp;'}`);
+  ed.querySelectorAll('.eq').forEach(q=>{if(!q.childNodes.length)render(q.dataset.tex,q,q.classList.contains('eqblock'))});save();
+});
+ed.addEventListener('click',e=>{const q=e.target.closest('.eq');if(q)openEq(q)});
+function rerenderEq(){ed.querySelectorAll('.eq').forEach(q=>render(q.dataset.tex,q,q.classList.contains('eqblock')))}
+
+/* ---------- collage : texte brut, pour garder une mise en forme propre ---------- */
+ed.addEventListener('paste',e=>{e.preventDefault();const t=(e.clipboardData||window.clipboardData).getData('text/plain');document.execCommand('insertText',false,t)});
+
+/* ---------- conversion vers le Markdown de Notion ---------- */
+const INLINE=new Set(['B','STRONG','I','EM','U','S','STRIKE','SPAN','FONT','A','BR','SUB','SUP','CODE','#text']);
+const esc=t=>t.replace(/ /g,' ').replace(/\\/g,'\\\\').replace(/([*_`$~<>\[\]])/g,'\\$1');
+const lead=s=>s.replace(/^(\s*)(\d+)([.)])/,'$1$2\\$3').replace(/^(\s*)([-+#>])(\s)/,'$1\\$2$3');
+function inl(n){let o='';for(const c of n.childNodes)o+=inl1(c);return o}
+function inl1(c){
+  if(c.nodeType===3)return esc(c.nodeValue);
+  if(c.nodeType!==1)return'';
+  if(c.classList.contains('eq'))return '$'+c.dataset.tex+'$';
+  const t=c.tagName;
+  if(t==='BR')return'<br />';
+  if(t==='DIV'||t==='P'||t==='LI')return inl(c)+'<br />';
+  let s=inl(c);if(!s.replace(/<br \/>/g,'').trim())return s;
+  const st=c.style,dec=(st.textDecoration||'')+(st.textDecorationLine||'');
+  if(t==='B'||t==='STRONG'||st.fontWeight==='bold'||+st.fontWeight>=600)s='<b>'+s+'</b>';
+  if(t==='I'||t==='EM'||st.fontStyle==='italic')s='<i>'+s+'</i>';
+  if(t==='U'||dec.includes('underline'))s='<u>'+s+'</u>';
+  if(t==='S'||t==='STRIKE'||dec.includes('line-through'))s='<s>'+s+'</s>';
+  const fg=c.getAttribute('color')||st.color;if(fg){const k=FG[norm(fg)];if(k)s=`<span color="${k}">${s}</span>`}
+  const bg=st.backgroundColor;if(bg&&bg!=='transparent'){const k=BG[norm(bg)];if(k)s=`<span color="${k}_bg">${s}</span>`}
+  return s;
+}
+const trimBr=s=>s.replace(/^(\s|<br \/>)+|(\s|<br \/>)+$/g,'');
+const para=s=>{s=trimBr(s);return s?lead(s):''};
+function blocks(par){
+  const out=[];let buf='';
+  const flush=()=>{const p=para(buf);if(p)out.push(p);buf=''};
+  for(const c of par.childNodes){
+    const nm=c.nodeType===3?'#text':c.nodeName;
+    if(INLINE.has(nm)&&!(c.classList&&c.classList.contains('eqblock'))){buf+=inl1(c);continue}
+    if(c.nodeType!==1)continue;
+    flush();const b=block(c);if(b)out.push(b);
+  }
+  flush();return out.join('\n\n');
+}
+function block(c){
+  const t=c.tagName,k=c.classList;
+  if(/^H[1-6]$/.test(t)){const lvl=Math.min(+t[1],3),txt=trimBr(inl(c));return txt?`<h${lvl} color="${['purple','blue','green'][lvl-1]}">${lead(txt)}</h${lvl}>`:''}
+  if(k.contains('eqblock'))return '$$\n'+c.dataset.tex+'\n$$';
+  if(k.contains('callout')){const [i,col]=CALL[c.dataset.k]||CALL.rq;return `<callout icon="${i}" color="${col}">\n${blocks(c)||' '}\n</callout>`}
+  if(t==='UL'||t==='OL')return list(c,0);
+  if(t==='TABLE')return tbl(c);
+  if(t==='HR')return'---';
+  if(t==='BLOCKQUOTE')return `<quote>\n${blocks(c)}\n</quote>`;
+  if([...c.children].some(x=>!INLINE.has(x.nodeName)))return blocks(c);
+  return para(inl(c));
+}
+function list(el,d){
+  const lines=[];
+  for(const li of el.children){
+    if(li.tagName!=='LI'){if(li.tagName==='UL'||li.tagName==='OL')lines.push(list(li,d+1));continue}
+    let txt='';const subs=[];
+    for(const c of li.childNodes){if(c.nodeName==='UL'||c.nodeName==='OL')subs.push(c);else if(c.nodeName==='P'||c.nodeName==='DIV')txt+=inl(c)+'<br />';else txt+=inl1(c)}
+    lines.push('\t'.repeat(d)+(el.tagName==='OL'?'1. ':'- ')+(trimBr(txt)||' '));
+    subs.forEach(s=>lines.push(list(s,d+1)));
+  }
+  return lines.join('\n');
+}
+function tbl(el){
+  const rows=[...el.rows].map(r=>'<tr>\n'+[...r.cells].map(td=>'<td>\n'+(trimBr(inl(td))||' ')+'\n</td>').join('\n')+'\n</tr>');
+  return `<table fit-page-width="true" header-row="${el.dataset.head==='1'}">\n${rows.join('\n')}\n</table>`;
+}
+const toMd=()=>blocks(ed);
+
+/* ---------- brouillon ---------- */
+let tSave;
+function save(){clearTimeout(tSave);tSave=setTimeout(()=>{ls.set('cahier-draft',{html:ed.innerHTML,title:$('#title').value,target:$('#target').value,mode,newName:$('#newName').value})},400)}
+ed.addEventListener('input',save);$('#title').addEventListener('input',save);$('#newName').addEventListener('input',save);
+function load(){
+  const d=ls.get('cahier-draft'),t=ls.get('cahier-targets');
+  if(Array.isArray(t)&&t.length)targets=t;
+  renderTargets(d&&d.target);
+  if(d){ed.innerHTML=d.html||'';$('#title').value=d.title||'';$('#newName').value=d.newName||'';mode=d.mode==='sub'?'sub':'append';document.querySelectorAll('.seg button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.mode===mode))}
+}
+$('#clear').addEventListener('click',()=>$('#dClear').showModal());
+$('#clNo').addEventListener('click',()=>$('#dClear').close());
+$('#clYes').addEventListener('click',()=>{ed.innerHTML='';$('#title').value='';save();$('#dClear').close();setStatus('Nouveau cours prêt.','')});
+
+/* ---------- aperçu du code ---------- */
+$('#showMd').addEventListener('click',()=>{$('#mdout').value=buildContent().content;$('#dMd').showModal()});
+$('#mdClose').addEventListener('click',()=>$('#dMd').close());
+$('#mdCopy').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('#mdout').value);$('#mdCopy').textContent='Copié ✓'}catch(e){$('#mdout').select();$('#mdCopy').textContent='Sélectionné : Ctrl+C'}setTimeout(()=>$('#mdCopy').textContent='Copier',2000)});
+
+/* ---------- compilation ---------- */
+function setStatus(msg,cls,link){const s=$('#status');s.className=cls||'';s.textContent=msg;if(link){s.append(' ');const a=document.createElement('a');a.href=link;a.target='_blank';a.rel='noopener';a.textContent='Ouvrir dans Notion';s.append(a)}}
+function dateLine(){const d=new Date();let s=d.toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});s=s[0].toUpperCase()+s.slice(1);return `<span color="gray">${s} — ${d.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</span>`}
+function buildContent(){
+  const title=$('#title').value.trim()||('Cours du '+new Date().toLocaleDateString('fr-FR'));
+  const body=toMd(),h=`<h1 color="purple">${lead(esc(title))}</h1>`;
+  if($('#target').value==='new')return{title,content:'<table-of-contents />\n\n'+h+'\n\n'+dateLine()+'\n\n'+body};
+  if(mode==='sub')return{title,content:dateLine()+'\n\n'+body};
+  return{title,content:h+'\n\n'+dateLine()+'\n\n'+body};
+}
+const pageUrl=id=>'https://app.notion.com/p/'+id.replace(/-/g,'');
+function errMsg(e){
+  switch(e&&e.code){
+    case'needs_reauth':return'La connexion à Notion a expiré : reconnecte Notion dans claude.ai → Paramètres → Connecteurs, puis recompile.';
+    case'server_not_connected':return'Notion n\'est pas connecté : ajoute-le dans claude.ai → Paramètres → Connecteurs.';
+    case'selection_required':return'Plusieurs connecteurs Notion existent : choisis-en un quand claude.ai te le demande, puis recompile.';
+    case'approval_required':case'not_in_manifest':case'consent_required':return'La page a besoin de ton autorisation pour écrire dans Notion : accepte la demande de claude.ai, puis recompile.';
+    case'blocked_by_policy':return'Ton organisation bloque cette action Notion.';
+    case'tool_error':return'Notion a refusé l\'ajout : '+(e.message||'erreur inconnue').slice(0,200);
+    case'server_unavailable':case'upstream_error':return'Notion n\'a pas répondu. Le cours a peut-être quand même été ajouté : vérifie dans Notion avant de recompiler.';
+    case'not_granted':case'capability_disabled':case'capability_removed':return'Ici, la page ne peut pas joindre Notion. Ouvre-la depuis claude.ai, ou utilise « Voir le code » pour copier le cours.';
+    default:return'Erreur : '+((e&&e.message)||'inconnue');
+  }
+}
+$('#compile').addEventListener('click',async()=>{
+  const body=toMd();if(!body.trim()){setStatus('La page est vide : écris ton cours avant de compiler.','err');return}
+  const tgt=$('#target').value;
+  if(tgt==='new'&&!$('#newName').value.trim()){setStatus('Donne un nom à la nouvelle matière.','err');$('#newName').focus();return}
+  const mcp=await mcpP;
+  if(!mcp){setStatus('Ici, la page ne peut pas joindre Notion. Ouvre-la depuis claude.ai, ou utilise « Voir le code » pour copier le cours.','err');return}
+  const btn=$('#compile');btn.disabled=true;btn.textContent='Compilation…';setStatus('Envoi vers Notion…','');
+  const {title,content}=buildContent();
+  try{
+    let url;
+    if(tgt==='new'){
+      const name=$('#newName').value.trim();
+      const r=await mcp.callTool('Notion','notion-create-pages',{parent:{type:'page_id',page_id:ROOT},allow_async:false,pages:[{properties:{title:name},icon:'📚',content}]});
+      const p=r.payload&&r.payload.pages&&r.payload.pages[0];
+      if(p&&p.id){targets.push({id:p.id,name});ls.set('cahier-targets',targets);renderTargets(p.id);$('#newName').value=''}
+      url=p&&p.url;
+    }else if(mode==='sub'){
+      const r=await mcp.callTool('Notion','notion-create-pages',{parent:{type:'page_id',page_id:tgt},allow_async:false,pages:[{properties:{title},icon:'📝',content}]});
+      const p=r.payload&&r.payload.pages&&r.payload.pages[0];url=p&&p.url;
+    }else{
+      await mcp.callTool('Notion','notion-update-page',{page_id:tgt,command:'insert_content',position:{type:'end'},allow_async:false,content});
+      url=pageUrl(tgt);
+    }
+    setStatus('« '+title+' » a été ajouté à Notion ✓','ok',url&&/^https:\/\//.test(url)?url:null);
+    save();
+  }catch(e){setStatus(errMsg(e),'err')}
+  finally{btn.disabled=false;btn.textContent='Compiler vers Notion'}
+});
+
+load();
+if(window.katex)rerenderEq();else addEventListener('load',rerenderEq);
+}
+</script>
+</body>
+</html>
