@@ -152,6 +152,7 @@ dialog textarea{width:100%;min-height:80px;font:16px ui-monospace,Menlo,monospac
 
 <div class="dock">
   <div id="status" role="status">Brouillon enregistré sur cet appareil.</div>
+  <button class="btn" id="install" hidden>Installer comme app</button>
   <button class="btn" id="showMd">Voir le code</button>
   <button class="btn" id="clear">Nouveau cours</button>
   <button class="btn main" id="compile">Compiler vers Notion</button>
@@ -421,6 +422,30 @@ $('#compile').addEventListener('click',async()=>{
   }catch(e){setStatus(errMsg(e),'err')}
   finally{btn.disabled=false;btn.textContent='Compiler vers Notion'}
 });
+
+/* ---------- application de bureau ---------- */
+function drawIcon(){
+  const c=document.createElement('canvas');c.width=c.height=256;const x=c.getContext('2d');
+  x.fillStyle='#e4002b';x.beginPath();x.roundRect(8,8,240,240,52);x.fill();
+  x.fillStyle='#fff';x.beginPath();x.roundRect(52,36,152,184,14);x.fill();
+  x.strokeStyle='#c4cbec';x.lineWidth=4;for(let y=78;y<=196;y+=24){x.beginPath();x.moveTo(64,y);x.lineTo(192,y);x.stroke()}
+  x.strokeStyle='#e4002b';x.lineWidth=5;x.beginPath();x.moveTo(84,44);x.lineTo(84,212);x.stroke();
+  x.fillStyle='#9065B0';x.fillRect(96,62,80,10);x.fillStyle='#337EA9';x.fillRect(96,110,60,8);x.fillStyle='#448361';x.fillRect(96,158,70,8);
+  return c.toDataURL('image/png');
+}
+(window.claude?claude.use('desktop'):Promise.resolve(null)).then(async d=>{
+  if(!d)return;
+  if(d.app&&d.app.dock){d.app.dock.setIcon(drawIcon()).catch(()=>{});return}
+  try{
+    if(await d.install.state()!=='available')return;
+    const b=$('#install');b.hidden=false;
+    b.addEventListener('click',async()=>{
+      const r=await d.install.request().catch(()=>'failed');
+      if(r==='installed'){b.hidden=true;setStatus('Installation lancée : l\'app « Cahier de cours » va apparaître sur ton ordinateur.','ok')}
+      else if(r!=='cancelled')setStatus('L\'installation n\'a pas pu se faire ici. Ouvre la page dans l\'app Claude pour ordinateur.','err');
+    });
+  }catch(e){}
+}).catch(()=>{});
 
 load();
 if(window.katex)rerenderEq();else addEventListener('load',rerenderEq);

@@ -14,6 +14,7 @@
 - **Rangement** : à la suite dans la page de la matière, dans une nouvelle sous-page, ou dans une nouvelle matière
 - **Brouillon** enregistré automatiquement dans le navigateur
 - **Voir le code** : affiche le Markdown envoyé à Notion (copiable)
+- **Installable comme application** depuis l'app Claude pour ordinateur (fenêtre et icône dédiées)
 
 ## Comment ça marche
 
