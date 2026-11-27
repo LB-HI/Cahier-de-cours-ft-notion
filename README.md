@@ -1,52 +1,66 @@
-# 📓 Cahier de cours
+# 📓 Cahier Malin × Notion
 
-Éditeur de prise de notes pour le BTS SIO, en forme de feuille de cahier Seyès. Quand le cours est terminé, le bouton **Compiler vers Notion** l'ajoute directement dans le bloc-notes Notion, avec la même mise en forme que le reste des cours.
+Fusion de **Cahier de cours** (l'éditeur en forme de feuille Seyès qui compile vers Notion) et de **[Cahier Malin](https://github.com/bradleyefrei/cahier-malin)** (enregistrement du cours, rédaction par l'IA, révisions, planning du soir), pour le BTS SIO.
+
+Une seule page, `index.html`, qui marche de deux façons :
+
+| | Dans claude.ai (navigateur ou app Claude) | Installée comme application Windows |
+|---|---|---|
+| Écrire le cours (éditeur complet) | ✅ | ✅ |
+| Dicter | ✅ dictée Claude | — |
+| **Enregistrer le cours au micro** | — | ✅ Whisper sur le PC, sans internet |
+| Rédaction par l'IA | ✅ Claude | ✅ Claude ou **Ollama** (gratuit, local) |
+| Fiches, flashcards, quiz, mnémotechniques, Feynman, carte mentale | ✅ | ✅ |
+| Planning du soir 21:00 – 23:00 avec frise, export .ics | ✅ | ✅ |
+| Rédaction automatique chaque soir dès 18:00 | ✅ si l'app est ouverte | ✅ + notification Windows |
+| Compiler vers Notion | ✅ | ✅ |
+| Rangement `Mes cours\<Matière>\<date - titre>\` (cours.md, fiches et quiz.md, transcription, audio Opus) | ⬇ téléchargement | ✅ automatique |
+| Sauvegarde export / import (aussi depuis l'ancienne appli Cahier Malin) | ✅ | ✅ |
 
 ## Fonctionnalités
 
-**Texte**
+**Éditeur (Cahier de cours)**
 - Titres T1 / T2 / T3 / T4 → violet, bleu, vert, orange (code couleur du bloc-notes Notion)
 - Gras, italique, souligné, barré, `code dans la ligne` (Ctrl+E), liens (Ctrl+K), effacer la mise en forme
-- 9 couleurs de texte, 9 surlignages et 9 fonds de paragraphe, identiques à la palette Notion
-- Citations
+- 9 couleurs de texte, 9 surlignages et 9 fonds de paragraphe, identiques à la palette Notion ; citations
+- Puces, numérotées, cases à cocher, indentation Tab / Maj+Tab
+- Tableaux, 2 ou 3 colonnes, sections dépliantes, blocs de code avec langage, sommaire, séparateurs
+- Équations LaTeX (KaTeX) et palette de symboles
+- Encadrés : Correction, À retenir, Attention, Définition, Exemple, Méthode, Exercice, Astuce, Remarque
+- Compiler vers Notion : à la suite, en sous-page ou dans une nouvelle matière ; « Voir le code »
 
-**Listes**
-- Puces, numérotées, cases à cocher (cliquer sur la case pour cocher)
-- Indentation avec Tab / Maj+Tab
+**Cahier Malin**
+1. **Enregistrer** le cours au micro (app Windows) : transcription Whisper (faster-whisper) sur le PC, langue détectée phrase par phrase, morceaux de 20 à 40 s coupés dans les silences, PC empêché de se mettre en veille. Chrono, niveau du micro et compteur de mots pendant le cours.
+2. **Rédiger** : l'IA retire le bruit de la classe et produit un cours structuré (Claude, ou Ollama + `gemma3:4b` en local ; les cours très longs sont lus partie par partie avec l'IA locale).
+3. **Réviser** : fiches, flashcards à 3 niveaux, quiz, moyens mnémotechniques, défis Feynman, carte mentale, écoute à voix haute.
+4. **Planning du soir** : séances de 25 min entre 21:00 et 23:00, fin à 22:25 la veille d'un contrôle, frise de la soirée, export agenda.
+5. **Automatique** : chaque soir à partir de 18:00 (heure réglable), tous les cours en attente sont rédigés avec leurs fiches et leurs quiz.
+6. **Rangement par matière** : `Mes cours\<Matière>\<date - titre>\` contient l'audio (Opus), `transcription.txt`, `cours.md`, `fiches et quiz.md` et le texte d'origine. Un cours supprimé part dans `Mes cours\_Corbeille`.
 
-**Mise en page**
-- Tableaux (ajout/suppression de lignes et colonnes, ligne d'en-tête)
-- 2 ou 3 colonnes
-- Sections dépliantes
-- Blocs de code avec langage (bash, PowerShell, SQL, Python, HTML…)
-- Sommaire automatique, séparateurs
+Les cours, la progression (XP, série de jours) et les matières créées sont gardés avec le compte Claude et suivent sur tous les appareils.
 
-**Maths**
-- Équations LaTeX dans la ligne ou centrées, avec boutons ∀ ∃ ∈ ℝ ⇒ ⇔ ∧ ∨, fractions, puissances… et aperçu en direct (KaTeX)
-- Palette de symboles à insérer dans le texte
+## Installer l'application Windows
 
-**Encadrés**
-- Correction ✅, À retenir 📌, Attention ⚠️, Définition 📘, Exemple 💡, Méthode 🛠️, Exercice ✏️, Astuce ✨, Remarque 📝
+1. Ouvrir la page dans l'**app Claude pour Windows**, puis « Installer comme app ».
+2. Ouvrir l'app installée → **Réglages** → « Autoriser l'accès à l'ordinateur ».
+3. Prérequis : [Python 3.13](https://www.python.org/). Dans Réglages, « Installer les modules manquants » lance
+   `py -3.13 -m pip install faster-whisper sounddevice numpy av`.
+   On peut aussi indiquer le Python de l'environnement de Cahier Malin (`…\cahier-malin\.venv\Scripts\python.exe`).
+4. Optionnel, pour l'IA locale gratuite : [Ollama](https://ollama.com), puis « Télécharger le modèle » dans Réglages.
+5. « Reprendre les cours de l'ancienne appli Cahier Malin » importe les cours de `%LOCALAPPDATA%\Cahier Malin\donnees`.
 
-**Le reste**
-- Rangement : à la suite dans la page de la matière, dans une nouvelle sous-page, ou dans une nouvelle matière
-- Brouillon enregistré automatiquement dans le navigateur
-- Voir le code : affiche le Markdown envoyé à Notion (copiable)
-- Installable comme application depuis l'app Claude pour ordinateur
+Le modèle Whisper `small` (~460 Mo) se télécharge au premier enregistrement.
 
 ## Comment ça marche
 
-`index.html` est une page autonome (HTML + CSS + JS, aucune dépendance à installer, KaTeX chargé depuis cdnjs).
-
-1. L'éditeur est une zone `contenteditable`.
-2. À la compilation, le contenu est converti en **Markdown Notion** (balises `<h1 color="purple">`, `<span color="red">`, `<callout>`, `<table>`, `$…$` pour les équations).
-3. Le cours est envoyé via le **connecteur Notion de claude.ai** (`notion-update-page` ou `notion-create-pages`).
-
-> ⚠️ L'envoi vers Notion passe par la capacité `mcp` des artifacts claude.ai : il ne fonctionne que lorsque la page est ouverte **depuis claude.ai** avec le connecteur Notion activé. Ouverte en local, la page fonctionne comme éditeur, et « Voir le code » permet de copier le résultat.
+- `index.html` est une page autonome (HTML + CSS + JS, KaTeX chargé depuis cdnjs). Elle utilise les capacités des artifacts claude.ai : `mcp` (connecteur Notion), `sample` (Claude), `dictation`, `db` + `user` (sauvegarde sur le compte), `downloads` et `desktop`.
+- Installée, la page déclare la permission `full-access` (balise `claude-artifacts-manifest`) : elle écrit le moteur Python dans `%LOCALAPPDATA%\Cahier Malin\moteur\moteur.py` et le lance. Page et moteur dialoguent en JSON, une ligne par message (commandes sur l'entrée standard, événements sur la sortie).
+- `moteur.py` (copie lisible ici, la page embarque la même) reprend le code de Cahier Malin : `Transcriber` (sounddevice 16 kHz + faster-whisper), compression Opus (PyAV), `LocalAI` (Ollama).
+- À la compilation, le contenu est converti en **Markdown Notion** (`<h1 color="purple">`, `<callout>`, `<table>`, `$…$`…) puis envoyé avec `notion-update-page` ou `notion-create-pages`.
 
 ## Configuration
 
-Les identifiants des pages Notion (page racine et matières) sont en haut du script dans `index.html` :
+Les identifiants des pages Notion sont en haut du script dans `index.html` :
 
 ```js
 const ROOT = '…';        // page « Léo — Efrei (BTS SIO 1) »
@@ -56,7 +70,7 @@ const DEFAULTS = [ … ];  // une entrée par matière : { id, name }
 ## Structure
 
 ```
-cahier-de-cours/
-├── index.html   # l'éditeur complet
+├── index.html   # l'application complète (page + moteur Python embarqué)
+├── moteur.py    # le moteur local, copie lisible de celui embarqué dans index.html
 └── README.md
 ```
